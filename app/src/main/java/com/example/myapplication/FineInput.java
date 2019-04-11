@@ -79,9 +79,9 @@ public class FineInput implements KeyboardUtils.OnSoftKeyBoardChangeListener, On
             }
             currentState = SHOWING;
         } else if (currentState == SHOWING) {
-            if (!isShow) {
-                dismiss(DISMISS_KEYBOARD);
-            }
+//            if (!isShow) {
+//                dismiss(DISMISS_KEYBOARD);
+//            }
         } else if (isDismissing()) {
             if (!isShow) {
                 Log.e("TAG", "消失但不销毁");
