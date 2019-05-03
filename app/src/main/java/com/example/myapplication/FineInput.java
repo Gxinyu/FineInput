@@ -14,11 +14,15 @@ public class FineInput implements KeyboardUtils.OnSoftKeyBoardChangeListener, On
      * 输入框的四种状态
      */
     public static final int INITIALIZE = 0;
-    public static final int SHOWING = 1;
+
+    public static final int SHOW_NORMAL = 199;
+    public static final int SHOW_EMOJI = 198;
+
     public static final int DISMISSED = 2;
     public static final int DISMISS_OUTSIDE = 100;
     public static final int DISMISS_BACKKEY = 101;
-    public static final int DISMISS_KEYBOARD = 103;
+
+
     private int currentState = INITIALIZE;
 
     /**
@@ -70,24 +74,38 @@ public class FineInput implements KeyboardUtils.OnSoftKeyBoardChangeListener, On
                     fineInputView.initialize(keyboadHeight);
                     fineInputView.setOnInputListener(this);
                 }
-                currentState = SHOWING;
+                currentState = SHOW_NORMAL;
             }
         } else if (currentState == DISMISSED) {
             Log.e("TAG", "重新显示");
-            if (fineInputView != null) {
-                fineInputView.show();
+            if (isShow) {
+                if (fineInputView != null) {
+                    fineInputView.show();
+                }
+                currentState = SHOW_NORMAL;
             }
-            currentState = SHOWING;
-        } else if (currentState == SHOWING) {
-//            if (!isShow) {
-//                dismiss(DISMISS_KEYBOARD);
-//            }
+        } else if (currentState == SHOW_NORMAL) {
+            if (!isShow) {
+                if (fineInputView != null) {
+                    fineInputView.dismiss();
+                }
+                currentState = DISMISSED;
+            }
+        } else if (currentState == SHOW_EMOJI) {
+            fineInputView.changeFocus(true);
+            if (isShow) {
+                if (fineInputView != null) {
+                    fineInputView.changeInputState(!isShow);
+                }
+                currentState = SHOW_NORMAL;
+            }
+
         } else if (isDismissing()) {
             if (!isShow) {
-                Log.e("TAG", "消失但不销毁");
                 currentState = DISMISSED;
             }
         }
+
         Log.e("TAG", "总的监听：" + currentState + isShow);
     }
 
@@ -96,8 +114,7 @@ public class FineInput implements KeyboardUtils.OnSoftKeyBoardChangeListener, On
      */
     private boolean isDismissing() {
         return currentState == DISMISS_BACKKEY
-                || currentState == DISMISS_OUTSIDE
-                || currentState == DISMISS_KEYBOARD;
+                || currentState == DISMISS_OUTSIDE;
     }
 
     @Override
@@ -123,7 +140,7 @@ public class FineInput implements KeyboardUtils.OnSoftKeyBoardChangeListener, On
     public void onSwithInputState(boolean isSpecial) {
         //切换软键盘
         KeyboardUtils.toggleSoftkeyboard(mActivity);
-        currentState = SHOWING;
+        currentState = isSpecial ? SHOW_EMOJI : SHOW_NORMAL;
     }
 
     @Override

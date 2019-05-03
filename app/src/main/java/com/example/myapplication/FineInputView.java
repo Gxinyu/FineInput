@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -137,6 +138,18 @@ public class FineInputView extends FrameLayout implements View.OnClickListener, 
     }
 
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.e("TAG", "dispatchKeyEvent");
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEventPreIme(KeyEvent event) {
+        Log.e("TAG", "dispatchKeyEventPreIme");
+        return super.dispatchKeyEventPreIme(event);
+    }
+
+    @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
             if (onInputListener != null) {
@@ -212,7 +225,7 @@ public class FineInputView extends FrameLayout implements View.OnClickListener, 
     private void switchContent() {
         mIsSpecial = !mIsSpecial;
         if (onInputListener != null) {
-            onInputListener.onSwithInputState(true);
+            onInputListener.onSwithInputState(mIsSpecial);
         }
         changeInputState(mIsSpecial);
     }
@@ -222,7 +235,7 @@ public class FineInputView extends FrameLayout implements View.OnClickListener, 
      *
      * @param isSpecialContent
      */
-    private void changeInputState(boolean isSpecialContent) {
+    public void changeInputState(boolean isSpecialContent) {
         mIsSpecial = isSpecialContent;
         //布局的时候
         rlSpecialContent.setVisibility(isSpecialContent == true ? VISIBLE : INVISIBLE);
